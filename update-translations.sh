@@ -4,8 +4,8 @@
 
 set -eu
 
-source_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-domain=plasma_applet_com.github.frameworkchargelimit.plasmoid
+source_dir=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
+domain=plasma_applet_com.github.vojtabiberle.frameworkchargelimit
 
 if ! command -v msgfmt >/dev/null 2>&1; then
     echo "GNU gettext (msgfmt) is required to build translations." >&2

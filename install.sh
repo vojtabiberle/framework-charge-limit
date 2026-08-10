@@ -4,8 +4,9 @@
 
 set -eu
 
-source_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-package_id=com.github.frameworkchargelimit.plasmoid
+source_dir=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
+package_id=com.github.vojtabiberle.frameworkchargelimit
+legacy_package_id=com.github.frameworkchargelimit.plasmoid
 
 for executable in /usr/bin/pkexec /usr/bin/kpackagetool6; do
     if [ ! -x "$executable" ]; then
@@ -28,3 +29,8 @@ else
 fi
 
 echo "Installed. Add ‘Framework Charge Limit’ from Plasma's Add Widgets panel."
+
+if /usr/bin/kpackagetool6 --type Plasma/Applet --show "$legacy_package_id" >/dev/null 2>&1; then
+    echo "An older widget ID is still installed. Replace it in the panel with the new"
+    echo "Framework Charge Limit widget; the old package is kept to avoid breaking the panel."
+fi

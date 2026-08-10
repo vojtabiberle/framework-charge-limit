@@ -6,10 +6,10 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Framework Charge Limit 0.5.0\n"
+"Project-Id-Version: Framework Charge Limit 1.0.0\n"
 "Report-Msgid-Bugs-To: https://github.com/vojtabiberle/framework-charge-limit/"
 "issues\n"
-"POT-Creation-Date: 2026-08-10 21:15+0200\n"
+"POT-Creation-Date: 2026-08-10 22:27+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -43,91 +43,111 @@ msgid ""
 "must be between 0% and 100%."
 msgstr ""
 
-#: package/contents/ui/main.qml:33 package/contents/ui/main.qml:39
+#: package/contents/ui/main.qml:36 package/contents/ui/main.qml:42
 msgid "Framework Charge Limit"
 msgstr ""
 
-#: package/contents/ui/main.qml:41
+#: package/contents/ui/main.qml:45
+msgid "Temporary 100% · restores to %1% when unplugged"
+msgstr ""
+
+#: package/contents/ui/main.qml:46
 msgid "Current limit: %1% · %2"
 msgstr ""
 
-#: package/contents/ui/main.qml:42
+#: package/contents/ui/main.qml:47
 msgid "Charge limit is unavailable"
 msgstr ""
 
-#: package/contents/ui/main.qml:78
+#: package/contents/ui/main.qml:83
 msgid "kernel sysfs"
 msgstr ""
 
-#: package/contents/ui/main.qml:81
+#: package/contents/ui/main.qml:86
 msgid "framework_tool"
 msgstr ""
 
-#: package/contents/ui/main.qml:83
+#: package/contents/ui/main.qml:88
 msgid "detecting…"
 msgstr ""
 
-#: package/contents/ui/main.qml:228
+#: package/contents/ui/main.qml:255
 msgid "Could not detect a charge-control backend."
 msgstr ""
 
-#: package/contents/ui/main.qml:247
+#: package/contents/ui/main.qml:306
 msgid "The privileged helper failed."
 msgstr ""
 
-#: package/contents/ui/main.qml:268
+#: package/contents/ui/main.qml:341
 msgid "Could not read the charge limit from %1."
 msgstr ""
 
-#: package/contents/ui/main.qml:359
+#: package/contents/ui/main.qml:432
 msgid "Battery charge limit"
 msgstr ""
 
-#: package/contents/ui/main.qml:365
+#: package/contents/ui/main.qml:438
 #, javascript-format
 msgid "Currently %1%"
 msgstr ""
 
-#: package/contents/ui/main.qml:366
+#: package/contents/ui/main.qml:439
 msgid "Current value unknown"
 msgstr ""
 
-#: package/contents/ui/main.qml:370
+#: package/contents/ui/main.qml:443
 msgid "Backend: %1"
 msgstr ""
 
-#: package/contents/ui/main.qml:380
+#: package/contents/ui/main.qml:453
 msgid "Refresh"
 msgstr ""
 
-#: package/contents/ui/main.qml:392
+#: package/contents/ui/main.qml:465
 #, javascript-format
 msgid "Battery care — %1%"
 msgstr ""
 
-#: package/contents/ui/main.qml:402
+#: package/contents/ui/main.qml:475
 #, javascript-format
 msgid "Travel mode — %1%"
 msgstr ""
 
-#: package/contents/ui/main.qml:421
+#: package/contents/ui/main.qml:487
+#, javascript-format
+msgid "Restore %1% now"
+msgstr ""
+
+#: package/contents/ui/main.qml:488
+msgid "Charge to 100% once"
+msgstr ""
+
+#: package/contents/ui/main.qml:513
 msgid ""
 "Passwordless helper not installed. Sysfs writes will request administrator "
 "authentication."
 msgstr ""
 
-#: package/contents/ui/main.qml:422
+#: package/contents/ui/main.qml:514
 msgid ""
 "Passwordless helper not installed. framework_tool will request administrator "
 "authentication."
 msgstr ""
 
-#: package/contents/ui/main.qml:434
+#: package/contents/ui/main.qml:526
+#, javascript-format
+msgid ""
+"Temporary mode is active. The %1% limit returns after external power is "
+"unplugged."
+msgstr ""
+
+#: package/contents/ui/main.qml:528
 msgid ""
 "Kernel mode uses five-point hysteresis below 100%. framework_tool is not "
 "called."
 msgstr ""
 
-#: package/contents/ui/main.qml:435
+#: package/contents/ui/main.qml:529
 msgid "Preset limits can be changed in the widget settings."
 msgstr ""

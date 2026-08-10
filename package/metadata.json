@@ -11,12 +11,13 @@
         "Description[cs]": "Přepnutí limitu nabíjení Framework Laptopu přes kernel sysfs nebo framework_tool",
         "EnabledByDefault": true,
         "Icon": "battery",
-        "Id": "com.github.frameworkchargelimit.plasmoid",
+        "Id": "com.github.vojtabiberle.frameworkchargelimit",
         "License": "MIT",
         "Name": "Framework Charge Limit",
         "Name[cs]": "Limit nabíjení Framework",
-        "Version": "0.5.0",
-        "Website": "https://github.com/vojtabiberle/framework-charge-limit"
+        "Version": "1.0.0",
+        "Website": "https://github.com/vojtabiberle/framework-charge-limit",
+        "BugReportUrl": "https://github.com/vojtabiberle/framework-charge-limit/issues"
     },
     "X-Plasma-API-Minimum-Version": "6.0"
 }

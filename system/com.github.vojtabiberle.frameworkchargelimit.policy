@@ -6,7 +6,7 @@
   <vendor>Vojtěch Biberle</vendor>
   <vendor_url>https://github.com/vojtabiberle/framework-charge-limit</vendor_url>
 
-  <action id="com.github.frameworkchargelimit.set-charge-limit">
+  <action id="com.github.vojtabiberle.frameworkchargelimit.set-charge-limit">
     <description>Change the Framework battery charge limit through sysfs or framework_tool</description>
     <description xml:lang="cs">Změnit limit nabíjení Framework přes sysfs nebo framework_tool</description>
     <message>Authentication is required to change the battery charge limit</message>
