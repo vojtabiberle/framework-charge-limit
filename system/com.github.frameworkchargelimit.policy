@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC
+ "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+<policyconfig>
+  <vendor>Vojtěch Biberle</vendor>
+  <vendor_url>https://github.com/vojtabiberle/framework-charge-limit</vendor_url>
+
+  <action id="com.github.frameworkchargelimit.set-charge-limit">
+    <description>Change the Framework battery charge limit through sysfs or framework_tool</description>
+    <description xml:lang="cs">Změnit limit nabíjení Framework přes sysfs nebo framework_tool</description>
+    <message>Authentication is required to change the battery charge limit</message>
+    <message xml:lang="cs">Pro změnu limitu nabíjení je vyžadováno ověření</message>
+    <defaults>
+      <allow_any>no</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/local/libexec/framework-charge-limit</annotate>
+  </action>
+</policyconfig>

@@ -1,0 +1,102 @@
+#!/bin/sh
+# SPDX-FileCopyrightText: 2026 Vojtěch Biberle
+# SPDX-License-Identifier: MIT
+
+set -eu
+
+FRAMEWORK_TOOL=/usr/bin/framework_tool
+
+find_end_threshold() {
+    for threshold in /sys/class/power_supply/BAT*/charge_control_end_threshold; do
+        if [ -f "$threshold" ]; then
+            printf '%s\n' "$threshold"
+            return 0
+        fi
+    done
+    return 1
+}
+
+require_framework_tool() {
+    if [ ! -x "$FRAMEWORK_TOOL" ]; then
+        echo "Missing $FRAMEWORK_TOOL (install framework-system)." >&2
+        exit 69
+    fi
+}
+
+read_limit() {
+    if end_threshold=$(find_end_threshold); then
+        /usr/bin/cat "$end_threshold"
+    else
+        require_framework_tool
+        "$FRAMEWORK_TOOL" --charge-limit
+    fi
+}
+
+set_sysfs_limit() {
+    end_threshold=$1
+    end_value=$2
+    start_value=$3
+    start_threshold=${end_threshold%end_threshold}start_threshold
+
+    current_end=$(/usr/bin/cat "$end_threshold")
+    case "$current_end" in
+        ''|*[!0-9]*)
+            echo "Invalid current sysfs threshold: $current_end" >&2
+            exit 65
+            ;;
+    esac
+
+    # Keep start <= end after each individual write. This matters when moving
+    # from an arbitrary existing limit, not only between our two presets.
+    if [ "$end_value" -gt "$current_end" ]; then
+        printf '%s\n' "$end_value" > "$end_threshold"
+        if [ -f "$start_threshold" ]; then
+            printf '%s\n' "$start_value" > "$start_threshold"
+        fi
+    else
+        if [ -f "$start_threshold" ]; then
+            printf '%s\n' "$start_value" > "$start_threshold"
+        fi
+        printf '%s\n' "$end_value" > "$end_threshold"
+    fi
+
+    /usr/bin/cat "$end_threshold"
+}
+
+case "${1-}" in
+    get)
+        read_limit
+        ;;
+    *)
+        limit=$1
+        case "$limit" in
+            ''|*[!0-9]*)
+                echo "Usage: framework-charge-limit {get|0..100}" >&2
+                exit 64
+                ;;
+        esac
+        while [ "$limit" != "0" ] && [ "${limit#0}" != "$limit" ]; do
+            limit=${limit#0}
+        done
+        if [ "$limit" -gt 100 ]; then
+            echo "Charge limit must be between 0 and 100." >&2
+            exit 64
+        fi
+
+        if end_threshold=$(find_end_threshold); then
+            if [ "$limit" -eq 100 ]; then
+                start_limit=0
+            else
+                start_limit=$((limit - 5))
+                if [ "$start_limit" -lt 0 ]; then
+                    start_limit=0
+                fi
+            fi
+            set_sysfs_limit "$end_threshold" "$limit" "$start_limit"
+        else
+            require_framework_tool
+            "$FRAMEWORK_TOOL" --charge-limit "$limit" >/dev/null
+            "$FRAMEWORK_TOOL" --charge-limit
+        fi
+        ;;
+esac

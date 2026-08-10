@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Vojtěch Biberle"
+            }
+        ],
+        "Category": "System Information",
+        "Description": "Switch a Framework Laptop charge limit using kernel sysfs or framework_tool",
+        "Description[cs]": "Přepnutí limitu nabíjení Framework Laptopu přes kernel sysfs nebo framework_tool",
+        "EnabledByDefault": true,
+        "Icon": "battery",
+        "Id": "com.github.frameworkchargelimit.plasmoid",
+        "License": "MIT",
+        "Name": "Framework Charge Limit",
+        "Name[cs]": "Limit nabíjení Framework",
+        "Version": "0.4.2",
+        "Website": "https://github.com/vojtabiberle/framework-charge-limit"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}
