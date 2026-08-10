@@ -1,0 +1,16 @@
+[Desktop Entry]
+Type=Application
+Name=Framework Charge Limit
+Name[cs]=Limit nabíjení Framework
+Comment=Control the Framework Laptop battery charge limit
+Comment[cs]=Ovládání limitu nabíjení baterie Framework Laptopu
+Exec=/usr/bin/plasmawindowed com.github.vojtabiberle.frameworkchargelimit
+TryExec=/usr/bin/plasmawindowed
+Icon=com.github.vojtabiberle.frameworkchargelimit
+Terminal=false
+StartupNotify=true
+StartupWMClass=org.kde.plasmawindowed
+SingleMainWindow=true
+Categories=System;
+Keywords=Framework;battery;charge;limit;
+Keywords[cs]=Framework;baterie;nabíjení;limit;

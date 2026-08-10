@@ -20,6 +20,7 @@ unplugged.
 ## Features
 
 - compact panel display showing the current limit or `?`,
+- standalone application launcher with its own Task Manager icon,
 - two one-click presets configurable from 0% to 100% in Plasma's widget settings,
 - one-shot 100% charging with automatic restore after external power is unplugged,
 - pending restore state survives Plasma restarts, logout, suspend, and reboot,
@@ -58,7 +59,9 @@ cd framework-charge-limit
 ```
 
 The installation asks for administrator authentication once. Then add
-**Framework Charge Limit** from Plasma's **Add Widgets…** panel.
+**Framework Charge Limit** from Plasma's **Add Widgets…** panel. It can also be
+opened as a standalone window from the application launcher; that window has a
+dedicated Framework Charge Limit icon in Plasma's Task Manager.
 
 ### Upgrading from a pre-1.0 version
 
@@ -111,6 +114,8 @@ Review these files before installing:
 - `system/com.github.vojtabiberle.frameworkchargelimit.policy`
 - `system/90-framework-charge-limit.rules`
 - `system/framework-charge-limit-restore.service`
+- `desktop/com.github.vojtabiberle.frameworkchargelimit.desktop`
+- `desktop/com.github.vojtabiberle.frameworkchargelimit.svg`
 
 ## Build a distributable package
 

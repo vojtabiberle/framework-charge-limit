@@ -6,9 +6,16 @@ set -eu
 
 package_id=com.github.vojtabiberle.frameworkchargelimit
 legacy_package_id=com.github.frameworkchargelimit.plasmoid
+data_home=${XDG_DATA_HOME:-"$HOME/.local/share"}
 
 /usr/bin/kpackagetool6 --type Plasma/Applet --remove "$package_id" || true
 /usr/bin/kpackagetool6 --type Plasma/Applet --remove "$legacy_package_id" || true
+/usr/bin/rm -f \
+    "$data_home/applications/$package_id.desktop" \
+    "$data_home/icons/hicolor/scalable/apps/$package_id.svg"
+if [ -x /usr/bin/kbuildsycoca6 ]; then
+    /usr/bin/kbuildsycoca6 --noincremental >/dev/null 2>&1 || true
+fi
 
 echo "Removing the privileged helper (administrator confirmation required)…"
 /usr/bin/pkexec /bin/sh -c \

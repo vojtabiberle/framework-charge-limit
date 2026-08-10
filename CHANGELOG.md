@@ -10,6 +10,7 @@ All notable changes to Framework Charge Limit are documented here.
 - add udev and systemd integration for restore events,
 - add English source strings and a complete Czech translation,
 - add GitHub Actions validation, package artifacts, and tagged releases,
+- add a standalone launcher and dedicated Task Manager icon,
 - add README screenshots and public installation documentation.
 
 ## 0.5.0 — 2026-08-10
