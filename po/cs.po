@@ -1,0 +1,90 @@
+# Czech translation for Framework Charge Limit.
+# SPDX-FileCopyrightText: 2026 Vojtěch Biberle
+# SPDX-License-Identifier: MIT
+msgid ""
+msgstr ""
+"Project-Id-Version: Framework Charge Limit 0.5.0\n"
+"Report-Msgid-Bugs-To: https://github.com/vojtabiberle/framework-charge-limit/issues\n"
+"PO-Revision-Date: 2026-08-10 00:00+0200\n"
+"Last-Translator: Vojtěch Biberle\n"
+"Language-Team: Czech\n"
+"Language: cs\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+
+msgid "Charge limits"
+msgstr "Limity nabíjení"
+
+msgid "Battery-care limit:"
+msgstr "Šetrný limit baterie:"
+
+msgid "Travel limit:"
+msgstr "Cestovní limit:"
+
+msgid "Enter whole percentages from 0 to 100. The battery-care limit must be lower than the travel limit. Limits below 100% use a start threshold five percentage points lower when the kernel sysfs backend supports it."
+msgstr "Zadejte celá procenta od 0 do 100. Šetrný limit musí být nižší než cestovní limit. Pokud rozhraní sysfs jádra podporuje počáteční hranici, používají limity pod 100 % počáteční hranici o pět procentních bodů nižší."
+
+msgid "Choose two valid limits: battery care must be lower than travel, and both must be between 0% and 100%."
+msgstr "Zvolte dva platné limity: šetrný limit musí být nižší než cestovní a oba musí být mezi 0 % a 100 %."
+
+msgid "Framework Charge Limit"
+msgstr "Limit nabíjení Framework"
+
+msgid "Current limit: %1% · %2"
+msgstr "Aktuální limit: %1 % · %2"
+
+msgid "Charge limit is unavailable"
+msgstr "Limit nabíjení není dostupný"
+
+msgid "kernel sysfs"
+msgstr "sysfs jádra"
+
+msgid "framework_tool"
+msgstr "framework_tool"
+
+msgid "detecting…"
+msgstr "zjišťování…"
+
+msgid "Could not detect a charge-control backend."
+msgstr "Nepodařilo se zjistit rozhraní pro řízení nabíjení."
+
+msgid "The privileged helper failed."
+msgstr "Privilegovaný pomocný program selhal."
+
+msgid "Could not read the charge limit from %1."
+msgstr "Z rozhraní %1 se nepodařilo přečíst limit nabíjení."
+
+msgid "Battery charge limit"
+msgstr "Limit nabíjení baterie"
+
+msgid "Currently %1%"
+msgstr "Aktuálně %1 %"
+
+msgid "Current value unknown"
+msgstr "Aktuální hodnota není známá"
+
+msgid "Backend: %1"
+msgstr "Rozhraní: %1"
+
+msgid "Refresh"
+msgstr "Obnovit"
+
+msgid "Battery care — %1%"
+msgstr "Šetrný režim — %1 %"
+
+msgid "Travel mode — %1%"
+msgstr "Cestovní režim — %1 %"
+
+msgid "Passwordless helper not installed. Sysfs writes will request administrator authentication."
+msgstr "Pomocný program bez opakovaného hesla není nainstalovaný. Zápis do sysfs bude vyžadovat ověření správce."
+
+msgid "Passwordless helper not installed. framework_tool will request administrator authentication."
+msgstr "Pomocný program bez opakovaného hesla není nainstalovaný. framework_tool bude vyžadovat ověření správce."
+
+msgid "Kernel mode uses five-point hysteresis below 100%. framework_tool is not called."
+msgstr "Režim jádra používá pod 100 % hysterezi pěti procentních bodů. framework_tool se nespouští."
+
+msgid "Preset limits can be changed in the widget settings."
+msgstr "Přednastavené limity lze změnit v nastavení widgetu."

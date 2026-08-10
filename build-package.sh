@@ -9,6 +9,10 @@ output_dir="$source_dir/dist"
 version=$(sed -n 's/.*"Version": "\([^"]*\)".*/\1/p' "$source_dir/package/metadata.json")
 archive="$output_dir/framework-charge-limit-$version.plasmoid"
 
+if command -v msgfmt >/dev/null 2>&1; then
+    "$source_dir/update-translations.sh"
+fi
+
 /usr/bin/mkdir -p "$output_dir"
 /usr/bin/rm -f "$archive"
 

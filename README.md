@@ -5,6 +5,16 @@ Laptop between **80% battery care** and **100% travel mode**. It automatically
 selects the standard Linux sysfs backend when available and otherwise falls
 back to Framework's official `framework_tool`.
 
+## Screenshots
+
+### Charge controls
+
+![Framework Charge Limit popup](docs/screenshots/charge-controls.png)
+
+### Configurable presets
+
+![Framework Charge Limit settings](docs/screenshots/preset-settings.png)
+
 ## Features
 
 - compact panel display showing the current limit or `?`,
@@ -16,7 +26,7 @@ back to Framework's official `framework_tool`.
 - never mixes the two charge-control APIs,
 - reads the actual limit back after changes,
 - follows the active Plasma color scheme,
-- English UI with Czech metadata,
+- English source UI with a bundled Czech translation,
 - no password prompts after the optional helper installation,
 - safe PolicyKit fallback when only the `.plasmoid` UI package is installed.
 
@@ -38,12 +48,27 @@ sudo pacman -S framework-system plasma5support polkit
 
 ```bash
 git clone git@github.com:vojtabiberle/framework-charge-limit.git
-cd framework-charge-plasmoid
+cd framework-charge-limit
 ./install.sh
 ```
 
 The installation asks for administrator authentication once. Then add
 **Framework Charge Limit** from Plasma's **Add Widgets…** panel.
+
+## Languages
+
+English is the source language and is always available. A Czech translation is
+bundled in the package. Translation sources live in `po/`; contributors can
+copy `po/cs.po` for a new locale and translate its `msgstr` entries.
+
+After editing a translation, rebuild the binary catalogs with:
+
+```bash
+./update-translations.sh
+```
+
+Maintainers can refresh the translation template from the QML sources with
+`./Messages.sh`. Both commands require GNU gettext.
 
 ## Why a privileged helper?
 
