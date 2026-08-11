@@ -4,8 +4,8 @@
 
 set -eu
 
-source_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-domain=plasma_applet_com.github.frameworkchargelimit.plasmoid
+source_dir=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
+domain=plasma_applet_com.github.vojtabiberle.frameworkchargelimit
 output_dir=${podir:-"$source_dir/po"}
 xgettext_bin=${XGETTEXT:-xgettext}
 

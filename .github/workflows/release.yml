@@ -1,0 +1,39 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+
+      - name: Install release tools
+        run: >-
+          pacman -Syu --noconfirm --needed
+          gettext github-cli zip
+
+      - name: Build release assets
+        run: |
+          archive=$(./build-package.sh)
+          sha256sum "$archive" > "$archive.sha256"
+          unzip -t "$archive"
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          gh release create "$GITHUB_REF_NAME"
+          dist/framework-charge-limit-*.plasmoid
+          dist/framework-charge-limit-*.plasmoid.sha256
+          --verify-tag
+          --title "Framework Charge Limit ${GITHUB_REF_NAME#v}"
+          --generate-notes

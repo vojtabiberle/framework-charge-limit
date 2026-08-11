@@ -3,8 +3,10 @@
 # SPDX-License-Identifier: MIT
 msgid ""
 msgstr ""
-"Project-Id-Version: Framework Charge Limit 0.5.0\n"
-"Report-Msgid-Bugs-To: https://github.com/vojtabiberle/framework-charge-limit/issues\n"
+"Project-Id-Version: Framework Charge Limit 1.0.0\n"
+"Report-Msgid-Bugs-To: https://github.com/vojtabiberle/framework-charge-limit/"
+"issues\n"
+"POT-Creation-Date: 2026-08-10 22:27+0200\n"
 "PO-Revision-Date: 2026-08-10 00:00+0200\n"
 "Last-Translator: Vojtěch Biberle\n"
 "Language-Team: Czech\n"
@@ -14,77 +16,149 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
+#: package/contents/config/config.qml:11
 msgid "Charge limits"
 msgstr "Limity nabíjení"
 
+#: package/contents/ui/configGeneral.qml:30
 msgid "Battery-care limit:"
 msgstr "Šetrný limit baterie:"
 
+#: package/contents/ui/configGeneral.qml:55
 msgid "Travel limit:"
 msgstr "Cestovní limit:"
 
-msgid "Enter whole percentages from 0 to 100. The battery-care limit must be lower than the travel limit. Limits below 100% use a start threshold five percentage points lower when the kernel sysfs backend supports it."
-msgstr "Zadejte celá procenta od 0 do 100. Šetrný limit musí být nižší než cestovní limit. Pokud rozhraní sysfs jádra podporuje počáteční hranici, používají limity pod 100 % počáteční hranici o pět procentních bodů nižší."
+#: package/contents/ui/configGeneral.qml:82
+msgid ""
+"Enter whole percentages from 0 to 100. The battery-care limit must be lower "
+"than the travel limit. Limits below 100% use a start threshold five "
+"percentage points lower when the kernel sysfs backend supports it."
+msgstr ""
+"Zadejte celá procenta od 0 do 100. Šetrný limit musí být nižší než cestovní "
+"limit. Pokud rozhraní sysfs jádra podporuje počáteční hranici, používají "
+"limity pod 100 % počáteční hranici o pět procentních bodů nižší."
 
-msgid "Choose two valid limits: battery care must be lower than travel, and both must be between 0% and 100%."
-msgstr "Zvolte dva platné limity: šetrný limit musí být nižší než cestovní a oba musí být mezi 0 % a 100 %."
+#: package/contents/ui/configGeneral.qml:92
+msgid ""
+"Choose two valid limits: battery care must be lower than travel, and both "
+"must be between 0% and 100%."
+msgstr ""
+"Zvolte dva platné limity: šetrný limit musí být nižší než cestovní a oba "
+"musí být mezi 0 % a 100 %."
 
+#: package/contents/ui/main.qml:36 package/contents/ui/main.qml:42
 msgid "Framework Charge Limit"
 msgstr "Limit nabíjení Framework"
 
-msgid "Current limit: %1% · %2"
-msgstr "Aktuální limit: %1 % · %2"
+#: package/contents/ui/main.qml:45
+msgid "Temporary 100% · restores to %1% when unplugged"
+msgstr "Dočasně 100 % · po odpojení se obnoví %1%"
 
+#: package/contents/ui/main.qml:46
+msgid "Current limit: %1% · %2"
+msgstr "Aktuální limit: %1% · %2"
+
+#: package/contents/ui/main.qml:47
 msgid "Charge limit is unavailable"
 msgstr "Limit nabíjení není dostupný"
 
+#: package/contents/ui/main.qml:83
 msgid "kernel sysfs"
 msgstr "sysfs jádra"
 
+#: package/contents/ui/main.qml:86
 msgid "framework_tool"
 msgstr "framework_tool"
 
+#: package/contents/ui/main.qml:88
 msgid "detecting…"
 msgstr "zjišťování…"
 
+#: package/contents/ui/main.qml:255
 msgid "Could not detect a charge-control backend."
 msgstr "Nepodařilo se zjistit rozhraní pro řízení nabíjení."
 
+#: package/contents/ui/main.qml:306
 msgid "The privileged helper failed."
 msgstr "Privilegovaný pomocný program selhal."
 
+#: package/contents/ui/main.qml:341
 msgid "Could not read the charge limit from %1."
 msgstr "Z rozhraní %1 se nepodařilo přečíst limit nabíjení."
 
+#: package/contents/ui/main.qml:432
 msgid "Battery charge limit"
 msgstr "Limit nabíjení baterie"
 
+#: package/contents/ui/main.qml:438
+#, javascript-format
 msgid "Currently %1%"
-msgstr "Aktuálně %1 %"
+msgstr "Aktuálně %1%"
 
+#: package/contents/ui/main.qml:439
 msgid "Current value unknown"
 msgstr "Aktuální hodnota není známá"
 
+#: package/contents/ui/main.qml:443
 msgid "Backend: %1"
 msgstr "Rozhraní: %1"
 
+#: package/contents/ui/main.qml:453
 msgid "Refresh"
 msgstr "Obnovit"
 
+#: package/contents/ui/main.qml:465
+#, javascript-format
 msgid "Battery care — %1%"
-msgstr "Šetrný režim — %1 %"
+msgstr "Šetrný režim — %1%"
 
+#: package/contents/ui/main.qml:475
+#, javascript-format
 msgid "Travel mode — %1%"
-msgstr "Cestovní režim — %1 %"
+msgstr "Cestovní režim — %1%"
 
-msgid "Passwordless helper not installed. Sysfs writes will request administrator authentication."
-msgstr "Pomocný program bez opakovaného hesla není nainstalovaný. Zápis do sysfs bude vyžadovat ověření správce."
+#: package/contents/ui/main.qml:487
+#, javascript-format
+msgid "Restore %1% now"
+msgstr "Obnovit %1% nyní"
 
-msgid "Passwordless helper not installed. framework_tool will request administrator authentication."
-msgstr "Pomocný program bez opakovaného hesla není nainstalovaný. framework_tool bude vyžadovat ověření správce."
+#: package/contents/ui/main.qml:488
+msgid "Charge to 100% once"
+msgstr "Jednorázově nabít na 100 %"
 
-msgid "Kernel mode uses five-point hysteresis below 100%. framework_tool is not called."
-msgstr "Režim jádra používá pod 100 % hysterezi pěti procentních bodů. framework_tool se nespouští."
+#: package/contents/ui/main.qml:513
+msgid ""
+"Passwordless helper not installed. Sysfs writes will request administrator "
+"authentication."
+msgstr ""
+"Pomocný program bez opakovaného hesla není nainstalovaný. Zápis do sysfs "
+"bude vyžadovat ověření správce."
 
+#: package/contents/ui/main.qml:514
+msgid ""
+"Passwordless helper not installed. framework_tool will request administrator "
+"authentication."
+msgstr ""
+"Pomocný program bez opakovaného hesla není nainstalovaný. framework_tool "
+"bude vyžadovat ověření správce."
+
+#: package/contents/ui/main.qml:526
+#, javascript-format
+msgid ""
+"Temporary mode is active. The %1% limit returns after external power is "
+"unplugged."
+msgstr ""
+"Dočasný režim je aktivní. Po odpojení externího napájení se obnoví limit "
+"%1%."
+
+#: package/contents/ui/main.qml:528
+msgid ""
+"Kernel mode uses five-point hysteresis below 100%. framework_tool is not "
+"called."
+msgstr ""
+"Režim jádra používá pod 100 % hysterezi pěti procentních bodů. "
+"framework_tool se nespouští."
+
+#: package/contents/ui/main.qml:529
 msgid "Preset limits can be changed in the widget settings."
 msgstr "Přednastavené limity lze změnit v nastavení widgetu."

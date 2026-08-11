@@ -1,0 +1,3 @@
+# Ask systemd to restore a one-shot limit after external power is disconnected.
+# --no-block keeps the udev worker free while the oneshot service does the work.
+ACTION=="change", SUBSYSTEM=="power_supply", ATTR{online}=="0", RUN+="/usr/bin/systemctl --no-block start framework-charge-limit-restore.service"

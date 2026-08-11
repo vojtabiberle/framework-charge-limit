@@ -4,7 +4,7 @@
 
 set -eu
 
-source_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+source_dir=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 output_dir="$source_dir/dist"
 version=$(sed -n 's/.*"Version": "\([^"]*\)".*/\1/p' "$source_dir/package/metadata.json")
 archive="$output_dir/framework-charge-limit-$version.plasmoid"

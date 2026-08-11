@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "vb/**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+
+      - name: Install validation tools
+        run: >-
+          pacman -Syu --noconfirm --needed
+          desktop-file-utils gettext kcmutils kirigami libplasma libxml2
+          plasma5support python qt6-declarative shellcheck unzip zip
+
+      - name: Validate QML
+        run: >-
+          /usr/lib/qt6/bin/qmllint
+          package/contents/ui/main.qml
+          package/contents/ui/configGeneral.qml
+          package/contents/config/config.qml
+
+      - name: Validate metadata and system files
+        run: |
+          xmllint --noout package/contents/config/main.xml
+          xmllint --noout system/com.github.vojtabiberle.frameworkchargelimit.policy
+          xmllint --noout desktop/com.github.vojtabiberle.frameworkchargelimit.svg
+          desktop-file-validate desktop/com.github.vojtabiberle.frameworkchargelimit.desktop
+          python -m json.tool package/metadata.json >/dev/null
+          shellcheck Messages.sh update-translations.sh build-package.sh install.sh uninstall.sh system/*.sh system/framework-charge-limit tests/*.sh
+
+      - name: Test privileged helper logic
+        run: ./tests/helper.sh
+
+      - name: Validate translations
+        run: |
+          translation_template=$(mktemp -d)
+          podir="$translation_template" ./Messages.sh
+          msgfmt --check --check-format --statistics -o /dev/null po/cs.po
+          msgcmp --use-fuzzy po/cs.po "$translation_template/plasma_applet_com.github.vojtabiberle.frameworkchargelimit.pot"
+
+      - name: Build package
+        run: |
+          archive=$(./build-package.sh)
+          unzip -t "$archive"
+
+      - name: Upload package
+        uses: actions/upload-artifact@v7
+        with:
+          name: framework-charge-limit
+          path: dist/framework-charge-limit-*.plasmoid
+          if-no-files-found: error

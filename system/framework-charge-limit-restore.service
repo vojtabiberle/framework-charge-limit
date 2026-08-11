@@ -1,0 +1,10 @@
+[Unit]
+Description=Restore a pending Framework battery charge limit
+After=systemd-udevd.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/libexec/framework-charge-limit restore
+
+[Install]
+WantedBy=multi-user.target

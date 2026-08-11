@@ -29,6 +29,9 @@ PlasmoidItem {
     property string pendingArgument: ""
     property string pendingKind: ""
     property string errorMessage: ""
+    property int oneShotSupported: -1
+    property bool oneShotArmed: false
+    property int oneShotRestoreLimit: -1
 
     Plasmoid.title: i18n("Framework Charge Limit")
     Plasmoid.icon: "battery"
@@ -38,11 +41,13 @@ PlasmoidItem {
 
     toolTipMainText: i18n("Framework Charge Limit")
     toolTipSubText: currentLimit >= 0
-        ? i18n("Current limit: %1% · %2", currentLimit, backendDisplayName())
+        ? oneShotArmed
+            ? i18n("Temporary 100% · restores to %1% when unplugged", oneShotRestoreLimit)
+            : i18n("Current limit: %1% · %2", currentLimit, backendDisplayName())
         : i18n("Charge limit is unavailable")
 
     switchWidth: Kirigami.Units.gridUnit * 14
-    switchHeight: Kirigami.Units.gridUnit * 12
+    switchHeight: Kirigami.Units.gridUnit * 15
 
     function parseLimit(output) {
         const patterns = [
@@ -186,10 +191,32 @@ PlasmoidItem {
         if (!Number.isInteger(limit) || limit < 0 || limit > 100) {
             return;
         }
-        if (currentLimit === limit) {
+        if (currentLimit === limit && !oneShotArmed) {
             return;
         }
         runBackend(String(limit));
+    }
+
+    function queryOneShotStatus() {
+        if (busy || helperState !== 1) {
+            return;
+        }
+        runCommand(
+            "/usr/bin/pkexec " + helperPath + " status",
+            "helper-status",
+            ""
+        );
+    }
+
+    function enableOneShot() {
+        if (busy || helperState !== 1 || oneShotSupported !== 1) {
+            return;
+        }
+        runCommand(
+            "/usr/bin/pkexec " + helperPath + " once " + careLimit,
+            "helper-once",
+            String(careLimit)
+        );
     }
 
     Plasma5Support.DataSource {
@@ -241,6 +268,38 @@ PlasmoidItem {
                 return;
             }
 
+            if (completedKind === "helper-status") {
+                if (exitCode !== 0) {
+                    // Helpers installed before version 1.0 do not implement
+                    // one-shot state. Keep the two normal presets functional.
+                    root.oneShotSupported = 0;
+                    root.oneShotArmed = false;
+                    root.oneShotRestoreLimit = -1;
+                    return;
+                }
+
+                const statusOutput = standardOutput.trim();
+                const armedMatch = statusOutput.match(/^armed\s+([0-9]{1,3})$/);
+                if (statusOutput === "inactive") {
+                    root.oneShotSupported = 1;
+                    root.oneShotArmed = false;
+                    root.oneShotRestoreLimit = -1;
+                } else if (armedMatch) {
+                    const restoreLimit = Number(armedMatch[1]);
+                    if (Number.isInteger(restoreLimit)
+                            && restoreLimit >= 0 && restoreLimit <= 100) {
+                        root.oneShotSupported = 1;
+                        root.oneShotArmed = true;
+                        root.oneShotRestoreLimit = restoreLimit;
+                    } else {
+                        root.oneShotSupported = 0;
+                    }
+                } else {
+                    root.oneShotSupported = 0;
+                }
+                return;
+            }
+
             if (exitCode !== 0) {
                 root.errorMessage = standardError.trim()
                     || standardOutput.trim()
@@ -248,9 +307,23 @@ PlasmoidItem {
                 return;
             }
 
+            if (completedKind === "helper-once") {
+                root.oneShotSupported = 1;
+                root.oneShotArmed = true;
+                root.oneShotRestoreLimit = Number(completedArgument);
+            } else if (completedKind === "helper" && completedArgument !== "get") {
+                root.oneShotArmed = false;
+                root.oneShotRestoreLimit = -1;
+            }
+
             const parsedLimit = root.parseLimit(standardOutput);
             if (parsedLimit >= 0) {
                 root.currentLimit = parsedLimit;
+                if (root.helperState === 1
+                        && ((completedKind === "helper" && completedArgument === "get")
+                            || completedKind === "sysfs-read")) {
+                    Qt.callLater(root.queryOneShotStatus);
+                }
                 return;
             }
 
@@ -339,9 +412,9 @@ PlasmoidItem {
 
     fullRepresentation: Item {
         Layout.minimumWidth: Kirigami.Units.gridUnit * 14
-        Layout.minimumHeight: Kirigami.Units.gridUnit * 12
+        Layout.minimumHeight: Kirigami.Units.gridUnit * 15
         Layout.preferredWidth: Kirigami.Units.gridUnit * 17
-        Layout.preferredHeight: Kirigami.Units.gridUnit * 15
+        Layout.preferredHeight: Kirigami.Units.gridUnit * 18
 
         ColumnLayout {
             anchors.fill: parent
@@ -390,8 +463,8 @@ PlasmoidItem {
                 Layout.fillWidth: true
                 Layout.preferredHeight: Kirigami.Units.gridUnit * 3
                 text: i18n("Battery care — %1%", root.careLimit)
-                icon.name: root.currentLimit === root.careLimit ? "checkmark" : "battery-080"
-                highlighted: root.currentLimit === root.careLimit
+                icon.name: root.currentLimit === root.careLimit && !root.oneShotArmed ? "checkmark" : "battery-080"
+                highlighted: root.currentLimit === root.careLimit && !root.oneShotArmed
                 enabled: !root.busy && root.backend !== "detecting"
                 onClicked: root.setLimit(root.careLimit)
             }
@@ -400,10 +473,29 @@ PlasmoidItem {
                 Layout.fillWidth: true
                 Layout.preferredHeight: Kirigami.Units.gridUnit * 3
                 text: i18n("Travel mode — %1%", root.travelLimit)
-                icon.name: root.currentLimit === root.travelLimit ? "checkmark" : "battery-100"
-                highlighted: root.currentLimit === root.travelLimit
+                icon.name: root.currentLimit === root.travelLimit && !root.oneShotArmed ? "checkmark" : "battery-100"
+                highlighted: root.currentLimit === root.travelLimit && !root.oneShotArmed
                 enabled: !root.busy && root.backend !== "detecting"
                 onClicked: root.setLimit(root.travelLimit)
+            }
+
+            PlasmaComponents3.Button {
+                Layout.fillWidth: true
+                Layout.preferredHeight: Kirigami.Units.gridUnit * 3
+                visible: root.oneShotSupported === 1
+                text: root.oneShotArmed
+                    ? i18n("Restore %1% now", root.oneShotRestoreLimit)
+                    : i18n("Charge to 100% once")
+                icon.name: root.oneShotArmed ? "chronometer-pause" : "chronometer"
+                highlighted: root.oneShotArmed
+                enabled: !root.busy
+                onClicked: {
+                    if (root.oneShotArmed) {
+                        root.setLimit(root.oneShotRestoreLimit);
+                    } else {
+                        root.enableOneShot();
+                    }
+                }
             }
 
             PlasmaComponents3.Label {
@@ -430,9 +522,11 @@ PlasmoidItem {
 
             PlasmaComponents3.Label {
                 Layout.fillWidth: true
-                text: root.backend === "sysfs"
-                    ? i18n("Kernel mode uses five-point hysteresis below 100%. framework_tool is not called.")
-                    : i18n("Preset limits can be changed in the widget settings.")
+                text: root.oneShotArmed
+                    ? i18n("Temporary mode is active. The %1% limit returns after external power is unplugged.", root.oneShotRestoreLimit)
+                    : root.backend === "sysfs"
+                        ? i18n("Kernel mode uses five-point hysteresis below 100%. framework_tool is not called.")
+                        : i18n("Preset limits can be changed in the widget settings.")
                 color: Kirigami.Theme.disabledTextColor
                 font.pointSize: Kirigami.Theme.smallFont.pointSize
                 wrapMode: Text.Wrap

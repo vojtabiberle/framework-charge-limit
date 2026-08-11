@@ -5,11 +5,71 @@
 set -eu
 
 FRAMEWORK_TOOL=/usr/bin/framework_tool
+POWER_SUPPLY_ROOT=/sys/class/power_supply
+STATE_DIR=/var/lib/framework-charge-limit
+STATE_FILE=$STATE_DIR/restore-limit
+
+usage() {
+    echo "Usage: framework-charge-limit {get|status|cancel|restore|once RESTORE_LIMIT|0..100}" >&2
+    exit 64
+}
+
+require_root() {
+    if [ "$(/usr/bin/id -u)" -ne 0 ]; then
+        echo "This helper must run as root (use pkexec)." >&2
+        exit 77
+    fi
+}
+
+acquire_lock() {
+    /usr/bin/install -d -o root -g root -m 0700 "$STATE_DIR"
+    exec 9>"$STATE_DIR/lock"
+    /usr/bin/flock -x 9
+}
+
+prepare_privileged_command() {
+    require_root
+    acquire_lock
+}
+
+normalize_limit() {
+    value=$1
+    case "$value" in
+        ''|*[!0-9]*)
+            return 1
+            ;;
+    esac
+    while [ "$value" != "0" ] && [ "${value#0}" != "$value" ]; do
+        value=${value#0}
+    done
+    if [ "$value" -gt 100 ]; then
+        return 1
+    fi
+    NORMALIZED_LIMIT=$value
+}
 
 find_end_threshold() {
-    for threshold in /sys/class/power_supply/BAT*/charge_control_end_threshold; do
+    for threshold in "$POWER_SUPPLY_ROOT"/BAT*/charge_control_end_threshold; do
         if [ -f "$threshold" ]; then
             printf '%s\n' "$threshold"
+            return 0
+        fi
+    done
+    return 1
+}
+
+external_power_online() {
+    for supply in "$POWER_SUPPLY_ROOT"/*; do
+        if [ ! -f "$supply/type" ] || [ ! -f "$supply/online" ]; then
+            continue
+        fi
+        supply_type=$(/usr/bin/cat "$supply/type")
+        case "$supply_type" in
+            Battery|UPS)
+                continue
+                ;;
+        esac
+        if [ "$(/usr/bin/cat "$supply/online")" = "1" ]; then
             return 0
         fi
     done
@@ -38,7 +98,7 @@ set_sysfs_limit() {
     start_value=$3
     start_threshold=${end_threshold%end_threshold}start_threshold
 
-    current_end=$(/usr/bin/cat "$end_threshold")
+    current_end=$(/usr/bin/cat "$end_threshold") || return $?
     case "$current_end" in
         ''|*[!0-9]*)
             echo "Invalid current sysfs threshold: $current_end" >&2
@@ -47,56 +107,135 @@ set_sysfs_limit() {
     esac
 
     # Keep start <= end after each individual write. This matters when moving
-    # from an arbitrary existing limit, not only between our two presets.
+    # from an arbitrary existing limit, not only between the default presets.
     if [ "$end_value" -gt "$current_end" ]; then
-        printf '%s\n' "$end_value" > "$end_threshold"
+        printf '%s\n' "$end_value" > "$end_threshold" || return $?
         if [ -f "$start_threshold" ]; then
-            printf '%s\n' "$start_value" > "$start_threshold"
+            printf '%s\n' "$start_value" > "$start_threshold" || return $?
         fi
     else
         if [ -f "$start_threshold" ]; then
-            printf '%s\n' "$start_value" > "$start_threshold"
+            printf '%s\n' "$start_value" > "$start_threshold" || return $?
         fi
-        printf '%s\n' "$end_value" > "$end_threshold"
+        printf '%s\n' "$end_value" > "$end_threshold" || return $?
     fi
 
     /usr/bin/cat "$end_threshold"
 }
 
-case "${1-}" in
+set_limit() {
+    limit=$1
+    if end_threshold=$(find_end_threshold); then
+        if [ "$limit" -eq 100 ]; then
+            start_limit=0
+        else
+            start_limit=$((limit - 5))
+            if [ "$start_limit" -lt 0 ]; then
+                start_limit=0
+            fi
+        fi
+        set_sysfs_limit "$end_threshold" "$limit" "$start_limit"
+    else
+        require_framework_tool
+        "$FRAMEWORK_TOOL" --charge-limit "$limit" >/dev/null || return $?
+        "$FRAMEWORK_TOOL" --charge-limit
+    fi
+}
+
+write_restore_limit() {
+    restore_limit=$1
+    /usr/bin/install -d -o root -g root -m 0700 "$STATE_DIR"
+    temporary=$(/usr/bin/mktemp "$STATE_DIR/.restore-limit.XXXXXX")
+    trap '/usr/bin/rm -f "$temporary"' EXIT HUP INT TERM
+    printf '%s\n' "$restore_limit" > "$temporary"
+    /usr/bin/chmod 0600 "$temporary"
+    /usr/bin/mv -f "$temporary" "$STATE_FILE"
+    trap - EXIT HUP INT TERM
+}
+
+read_restore_limit() {
+    if [ ! -f "$STATE_FILE" ]; then
+        return 1
+    fi
+    stored=$(/usr/bin/cat "$STATE_FILE")
+    if ! normalize_limit "$stored"; then
+        echo "Invalid saved restore limit; discarding one-shot state." >&2
+        /usr/bin/rm -f "$STATE_FILE"
+        return 1
+    fi
+    RESTORE_LIMIT=$NORMALIZED_LIMIT
+}
+
+clear_restore_limit() {
+    /usr/bin/rm -f "$STATE_FILE"
+}
+
+command_name=${1-}
+case "$command_name" in
     get)
+        [ "$#" -eq 1 ] || usage
+        prepare_privileged_command
         read_limit
         ;;
-    *)
-        limit=$1
-        case "$limit" in
-            ''|*[!0-9]*)
-                echo "Usage: framework-charge-limit {get|0..100}" >&2
-                exit 64
-                ;;
-        esac
-        while [ "$limit" != "0" ] && [ "${limit#0}" != "$limit" ]; do
-            limit=${limit#0}
-        done
-        if [ "$limit" -gt 100 ]; then
-            echo "Charge limit must be between 0 and 100." >&2
+    status)
+        [ "$#" -eq 1 ] || usage
+        prepare_privileged_command
+        if read_restore_limit; then
+            printf 'armed %s\n' "$RESTORE_LIMIT"
+        else
+            printf 'inactive\n'
+        fi
+        ;;
+    cancel)
+        [ "$#" -eq 1 ] || usage
+        prepare_privileged_command
+        clear_restore_limit
+        printf 'inactive\n'
+        ;;
+    restore)
+        [ "$#" -eq 1 ] || usage
+        prepare_privileged_command
+        if ! read_restore_limit; then
+            printf 'inactive\n'
+            exit 0
+        fi
+        if external_power_online; then
+            printf 'armed %s\n' "$RESTORE_LIMIT"
+            exit 0
+        fi
+        restored_output=$(set_limit "$RESTORE_LIMIT")
+        clear_restore_limit
+        printf '%s\n' "$restored_output"
+        ;;
+    once)
+        [ "$#" -eq 2 ] || usage
+        if ! normalize_limit "$2"; then
+            echo "Restore limit must be between 0 and 100." >&2
             exit 64
         fi
-
-        if end_threshold=$(find_end_threshold); then
-            if [ "$limit" -eq 100 ]; then
-                start_limit=0
-            else
-                start_limit=$((limit - 5))
-                if [ "$start_limit" -lt 0 ]; then
-                    start_limit=0
-                fi
-            fi
-            set_sysfs_limit "$end_threshold" "$limit" "$start_limit"
-        else
-            require_framework_tool
-            "$FRAMEWORK_TOOL" --charge-limit "$limit" >/dev/null
-            "$FRAMEWORK_TOOL" --charge-limit
+        restore_limit=$NORMALIZED_LIMIT
+        prepare_privileged_command
+        if ! external_power_online; then
+            echo "Connect external power before enabling one-shot charging." >&2
+            exit 75
         fi
+        write_restore_limit "$restore_limit"
+        if temporary_output=$(set_limit 100); then
+            printf '%s\n' "$temporary_output"
+        else
+            clear_restore_limit
+            exit 1
+        fi
+        ;;
+    *)
+        [ "$#" -eq 1 ] || usage
+        if ! normalize_limit "$command_name"; then
+            usage
+        fi
+        limit=$NORMALIZED_LIMIT
+        prepare_privileged_command
+        manual_output=$(set_limit "$limit")
+        clear_restore_limit
+        printf '%s\n' "$manual_output"
         ;;
 esac
