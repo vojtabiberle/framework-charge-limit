@@ -19,12 +19,14 @@ jobs:
       - name: Install release tools
         run: >-
           pacman -Syu --noconfirm --needed
-          gettext github-cli zip
+          gettext github-cli unzip zip
 
       - name: Build release assets
         run: |
           archive=$(./build-package.sh)
-          sha256sum "$archive" > "$archive.sha256"
+          archive_dir=${archive%/*}
+          archive_name=${archive##*/}
+          (cd "$archive_dir" && sha256sum "$archive_name" > "$archive_name.sha256")
           unzip -t "$archive"
 
       - name: Publish GitHub Release
