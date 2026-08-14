@@ -9,6 +9,10 @@ unplugged.
 
 ## Screenshots
 
+### Compact panel widget
+
+<img src="docs/screenshots/compact-panel-widget.png" alt="Framework Charge Limit showing an 80% limit in the Plasma panel" width="169">
+
 ### Charge controls
 
 <img src="docs/screenshots/charge-controls.png" alt="Framework Charge Limit popup" width="500">
@@ -62,14 +66,6 @@ The installation asks for administrator authentication once. Then add
 **Framework Charge Limit** from Plasma's **Add Widgets…** panel. It can also be
 opened as a standalone window from the application launcher; that window has a
 dedicated Framework Charge Limit icon in Plasma's Task Manager.
-
-### Upgrading from a pre-1.0 version
-
-Version 1.0 adopts the stable widget ID
-`com.github.vojtabiberle.frameworkchargelimit`. The installer keeps the old
-package temporarily so an existing panel is not left with a broken widget.
-Remove the old panel instance and add **Framework Charge Limit** again; your two
-preset values can then be entered in the new widget settings.
 
 ## Languages
 
